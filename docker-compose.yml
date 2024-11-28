@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    # image: ollama/ollama:latest
+    container_name: ollama_server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama/data:/root/.ollama
+      # - ./entrypoint.sh:/entrypoint.sh
+    networks:
+      - app_network
+    pull_policy: always
+    tty: true
+    # entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+
+  api-service:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+    container_name: api_server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api-service:/translation-service/api-service
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OLLAMA_HOST=http://ollama_server:11434
+    depends_on:
+      - ollama
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
