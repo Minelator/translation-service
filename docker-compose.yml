@@ -10,8 +10,8 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ./ollama/data:/root/.ollama
-      # - ./entrypoint.sh:/entrypoint.sh
+      # - ./ollama/data:/root/.ollama
+      - D:/docker/ollama/data:/root/.ollama
     networks:
       - app_network
     pull_policy: always
