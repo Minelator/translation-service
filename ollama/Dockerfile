@@ -1,32 +1,17 @@
-# FROM ubuntu:22.04
+# Используем официальный базовый образ Ollama
 FROM ollama/ollama:latest
 
-# Установка системных зависимостей
-# RUN apt-get update && apt-get install -y \
-#     curl \
-#     wget \
-#     software-properties-common \
-#     && rm -rf /var/lib/apt/lists/*
+# Установка рабочего каталога
+WORKDIR /ollama
 
-# Установка Ollama CLI
-# RUN curl -fsSL https://ollama.com/install.sh | sh && \
-#     which ollama
+# Копируем entrypoint.sh в контейнер
+COPY ./entrypoint.sh ./entrypoint.sh
 
-# Проверяем, что Ollama установлена корректно
-# RUN which ollama || echo "Ollama CLI не установлена!"
+# Преобразуем файл в формат Unix и делаем его исполняемым
+RUN sed -i 's/\r$//' ./entrypoint.sh && chmod +x ./entrypoint.sh
 
-# Добавляем команду для загрузки модели в отдельной стадии
-# RUN ollama pull qwen:0.5b || echo "Ошибка при загрузке модели"
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-
-# Экспонирование порта Ollama API
+# Экспонируем порт Ollama API
 EXPOSE 11434
 
-# Запуск Ollama сервера
-# CMD ["ollama", "serve"]
-ENTRYPOINT ["/entrypoint.sh"]
-
-
-
+# Указываем скрипт для запуска
+ENTRYPOINT ["./entrypoint.sh"]
